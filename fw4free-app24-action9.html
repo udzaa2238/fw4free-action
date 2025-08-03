@@ -1,4 +1,721 @@
 <!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>fw4free-app24-action 9</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- External CSS -->
+  <link href="https://playtvthai.github.io/m3u8/css/bootstrap.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link href="https://playtvthai.github.io/m3u8/css/style.css" rel="stylesheet" type="text/css" media="all" />
+  <link rel="stylesheet" href="https://playtvthai.github.io/m3u8/css/normalize.css">
+  <link rel="stylesheet" href="https://playtvthai.github.io/m3u8/css/custom.css">
+  <link rel="stylesheet" href="https://playtvthai.github.io/m3u8/css/main.css">
+  <link rel="stylesheet" href="http://hdtvdd.com/work/assets_remark/fonts/font-awesome/font-awesome.min.css">
+  <link rel="stylesheet" href="http://hdtvdd.com/work/font/stylesheet.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="http://hdtvdd.com/work/css/8k.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="http://hdtvdd.com/work/css/overlay.css" type="text/css" charset="utf-8">
+  <link href="http://hdtvdd.com/work/css/theme.css" rel="stylesheet">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:100,200,300,400,500,600,700,800,900" rel="stylesheet" type="text/css">
+
+  <!-- JS (dedupe jQuery) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://playtvthai.github.io/m3u8/js/jquery.backstretch.js"></script>
+  <script src="http://hdtvdd.com/work/bootstrap-login-forms/form-2/assets/js/scripts.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100%;
+      background: #000;
+      box-sizing: border-box;
+      overflow-x: hidden;
+      font-family: 'Roboto Condensed', sans-serif;
+    }
+    *, *:before, *:after { box-sizing: inherit; }
+
+    /* Search/filter bar */
+    .filter-bar {
+      margin: 10px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .filter-bar input, .filter-bar select {
+      padding: 8px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #444;
+      background: #1f2025;
+      color: #fff;
+    }
+
+    /* Movie grid 5 columns */
+    .movies-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 -5px;
+      padding-top: 10px;
+    }
+    .movie-item {
+      flex: 0 0 10%;
+      box-sizing: border-box;
+      padding: 0 5px;
+      margin-bottom: 20px;
+      max-width: 200px;
+    }
+    .movie-box {
+      background: #1f2025;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    .movie-image button {
+      width: 100%;
+      height: 0;
+      padding-top: 147%;
+      background-size: cover;
+      background-position: center;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    .movie-title {
+      color: white;
+      font-size: 14px;
+      text-align: center;
+      margin-top: 6px;
+      line-height: 1.2;
+      padding: 0 4px;
+      word-break: break-word;
+    }
+
+    @media (max-width: 1200px) {
+      .movie-item { flex: 0 0 33.333%; }
+    }
+    @media (max-width: 900px) {
+      .movie-item { flex: 0 0 50%; }
+    }
+    @media (max-width: 600px) {
+      .movie-item { flex: 0 0 100%; }
+    }
+
+    .pagination-wrapper { text-align: center; margin-top: 20px; }
+    .pagination > li > a, .pagination > li > span { padding: 6px 12px; }
+  </style>
+
+  <script>
+    $(document).ready(function(){
+      $("#myBtn").click(function(){ $("#myModal").modal(); });
+      $("#myBtn2").click(function(){ $("#myModal2").modal(); });
+      $("#myBtn_vip").click(function(){ $("#myModal_vip").modal(); });
+      $("#myBtn_cpass").click(function(){ $("#myModal_changepass").modal(); });
+
+      // Filter logic
+      function normalizeText(t) {
+        return t.trim().toLowerCase();
+      }
+
+      function applyFilter() {
+        const query = normalizeText($("#movie-search").val() || "");
+        const category = $("#category-filter").val();
+        $(".movie-item").each(function() {
+          const title = normalizeText($(this).find(".movie-title").text() || "");
+          const itemCat = $(this).attr("data-category") || "all";
+          const matchesSearch = query === "" || title.includes(query);
+          const matchesCategory = category === "all" || itemCat === category;
+          if (matchesSearch && matchesCategory) {
+            $(this).show();
+          } else {
+            $(this).hide();
+          }
+        });
+      }
+
+      $("#movie-search").on("input", applyFilter);
+      $("#category-filter").on("change", applyFilter);
+    });
+  </script>
+</head>
+
+<body>
+                  <label for="form-password"><font color="white">ชื่อ : </font><font color="yellow">[ ผู้เฒ่าพเนจร ™ ]</font></label>
+
+                  <button class="btn btn-default" type="button" style="background-color:transparent;border-radius:2px;border:0;font-size:18px;color:#FFF;padding:0 5px;font-family:'rsuregular';" onclick="window.location.href='go:digital'">🏠 Home ™</button>
+                  <button class="btn btn-default" type="button" style="background-color:transparent;border-radius:2px;border:0;font-size:18px;color:#FFF;padding:0 5px;font-family:'rsuregular';" onclick="window.location.href='go:live'">📡 ถ่ายทอดสด ™</button>
+                  <button class="btn btn-default" type="button" style="background-color:transparent;border-radius:2px;border:0;font-size:18px;color:#FFF;padding:0 5px;font-family:'rsuregular';" onclick="window.location.href='go:main-serie'">🎞️ ดูซีรี่ย์ ™</button>
+                  <button class="btn btn-default" type="button" style="background-color:transparent;border-radius:2px;border:0;font-size:18px;color:#FFF;padding:0 5px;font-family:'rsuregular';" onclick="window.location.href='go:main-movie'">🎥 ดูหนัง ™</button>
+                  <button class="btn btn-default" type="button" style="background-color:transparent;border-radius:2px;border:0;font-size:18px;color:#FFF;padding:0 5px;font-family:'rsuregular';" onclick="window.location.href='go:main-movie'">📽️ ดูสารคดี ™</button>
+                  <button class="btn btn-default" type="button" style="background-color:transparent;border-radius:2px;border:0;font-size:18px;color:#FFF;padding:0 5px;font-family:'rsuregular';" onclick="window.location.href='http://action_exit'">🚪 ออก</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- filter bar -->
+          <div class="filter-bar">
+            <div>
+              <input id="movie-search" type="text" placeholder="ค้นหาหนัง..." />
+            </div>
+            <div>
+              <select id="category-filter">
+                <option value="all">ทั้งหมด</option>
+                <option value="action">Action</option>
+                <option value="drama">Drama</option>
+                <option value="sci-fi">Sci-Fi</option>
+                <option value="exclusive">Exclusive</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- รวมทุก movie-item ไว้ใน grid เดียว -->
+          <div class="movies-grid">
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240723185517ciz12N2kHrREYAjIbB7R8eKwoMq.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Johnny_And_Clyde_2023/Johnny_And_Clyde_2023_st_1080_HDTV.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Johnny &amp; Clyde (2023) HDTV บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240723184810soFwaW0ZX0bWrRCzRmwNgMfzMPX.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/In_Isolation_2022/In_Isolation_2022_st_1080_HDTV.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">In Isolation (2022) HDTV บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240611175717nP6RliHjxsz4irTKsxe8FRhKZYl.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie3/Bad_Boys_Ride_or_Die_2024/Bad_Boys_Ride_or_Die_2024_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Bad Boys: Ride or Die คู่หูขวางนรก: ลุยต่อให้โลกจำ (2024)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240722213400l3rBFBYPSKAziYOC7uGMMG75RDs.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Hunting_Games_2023/Hunting_Games_2023_st_1080_HDTV.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Hunting Games (2023) HDTV บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240721223212MV5BZDIwZmNmNGYtOTljMy00ODBkLTkzNjQtNmFmNmQ5MDQyYjdkXkEyXkFqcGdeQXVyMzIwNDY4NDI@._V1_FMjpg_UX1000_.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/The_Opium_War_1997/The_Opium_War_1997_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">The Opium War สงครามฝิ่น สิ้นฮ่องกง (1997)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/2024071921295671JObQnwxUbBSfsHltnb6u9dGmf.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Salt_2010/Salt_2010_th_1080_Theatrical.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Salt สวยสังหาร (2010)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240719210720Bf3vCfM94bSJ1saZlyi0UW0e0U.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/My_Spy_The_Eternal_City_2024/My_Spy_The_Eternal_City_2024_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">My Spy: The Eternal City พยัคฆ์ร้าย สปายแสบ: คู่ป่วนตะลุยเมืองศักดิ์สิทธิ์ (2024)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240719202323AqL9sMpwnxNmEx4SXJsBzRdFGLK.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Messy_Temple_2022/Messy_Temple_2022_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Messy Temple ก๊วนสุดจัด วัดอลเวง (2022)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240716154642oPDwPFhDFDqY0RhXQiAXq7cCWPX.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Demon_Warriors_2007/Demon_Warriors_2007_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">โอปปาติก เกิดอมตะ Demon Warriors (2007)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240715063619ljGAhe56rJ2DCRGrrd5FZ5xCBPN.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Macross_Frontier_The_Wings_of_Farewell_2011/Macross_Frontier_The_Wings_of_Farewell_2011_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Macross Frontier: The Wings of Farewell (2011) บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240715063057uO4IgxJGgqoIyEnYYerLXDxlHBc.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie3/Macross_Frontier_The_False_Songstress_2009/Macross_Frontier_The_False_Songstress_2009_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Macross Frontier: The False Songstress (2009) บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/202407132003598fYluTtB3b3HKO7KQa5tzrvGaps.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Descendants_The_Rise_of_Red_2024/Descendants_The_Rise_of_Red_2024_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Descendants: The Rise of Red (2024) Disney+ บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240712105402MV5BODJhYmU2OWUtZWI3Yy00MTQ2LThmNTItNWY5OTc2ZTA3MjkyXkEyXkFqcGdeQXVyMDU2NjAwNg@@._V1_FMjpg_UX1000_.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie3/Leha_2024/Leha_2024_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Leha เลฮา (2024) บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/202407121029505P6lFTNTjxLVKQJP7x0W3U4yusr.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie3/Freelance_2023/Freelance_2023_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Freelance จ็อบระห่ำ คนถึกระทึกโลก (2023)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240710164441mKKJmKTwTkhNWnokZqIMcldZySo.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Deadly_Inferno_2016/Deadly_Inferno_2016_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Deadly Inferno (2016) HDTV บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240709152707kv4n3xgRWtkldaD4kyy1FvpW6bO.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/The_Retirement_Plan_2023/The_Retirement_Plan_2023_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">The Retirement Plan โจ๋วัยเก๋า (2023) บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240708162827fHQHC32dhom8u0OxC2hs2gYQh0M.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Blowback_2022/Blowback_2022_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Blowback (2022) HDTV บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240708161647zKisJfMxpp0KfX4P3VyDrH0edg6.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Beta_Test_2016/Beta_Test_2016_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Beta Test (2016) HDTV บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/202407081601365MaF1WIt8s9aEGQpYfaKhEOgVjK.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/The_51st_State_2001/The_51st_State_2001_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">The 51st State (Formula 51)  คู่บรรลัย ใส่เกียร์ลุย (2001)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240707123914t9xJGY5RV9rrL34WFEcdRlH37GT.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Maximum_Risk_1996/Maximum_Risk_1996_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Maximum Risk คนอึดล่าสุดโลก (1996)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240706095525vtuKbkVIlnPTskt4mUZj6QiZYKc.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Duan_Nago_Bogho_2023/Duan_Nago_Bogho_2023_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Duan Nago Bogho (2023) บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240705021255mvYvH5TYe66axlE5CII3tdwXDcF.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Bhaje_Vaayu_Vegam_2024/Bhaje_Vaayu_Vegam_2024_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Bhaje Vaayu Vegam (2024) บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/202407040153545OehGNBJUJeYrwMwtb2p0aXtpju.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Beverly_Hills_Cop_Axel_F_2024/Beverly_Hills_Cop_Axel_F_2024_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Beverly Hills Cop: Axel F โปลิศจับตำรวจ: เอ็กเซล เอฟ (2024) NETFLIX</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240702221732aM3AzCwobCnhN2IWsMO4GNYlxfI.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/American_Sicario_2021/American_Sicario_2021_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">American Sicario (2021) HDTV บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/202407020159581pSk6DU0oY7BWTK4F9keqjeCxB7.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Altitude_2017/Altitude_2017_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Altitude (2017) HDTV บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/202406302248475aCmEH8dgWLiAmTZiVqVrtte7jk.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/The_Comeback_2023/The_Comeback_2023_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">The Comeback เดือดร้อนให้หาลุงหัว (2023)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240630223012dCTQKn6zpbuD5kFGadSyrKX0yge.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Dark_Forest_2024/Dark_Forest_2024_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Dark Forest ป่าอันมืดมิด (2024) บรรยายไทย AI</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/202406060251573daOEMQCOGU2n9EbUC0PICnUCek.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie3/Demon_Slayer_Kimetsu_no_Yaiba_To_the_Hashira_Training_2024/Demon_Slayer_Kimetsu_no_Yaiba_To_the_Hashira_Training_2024_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Demon Slayer: Kimetsu no Yaiba To the Hashira Training ดาบพิฆาตอสูร เดอะมูฟวี่ ปาฏิหาริย์แห่งสายสัมพันธ์ สู่การสั่งสอนของเสาหลัก (2024)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240522194921e7olqFmzcIX5c23kX4zSmLPJi8c.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/The_Fall_Guy_2024/The_Fall_Guy_2024_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">The Fall Guy สตันท์แมนคนจริง (2024)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240527011136vSN8lYtYdMl97LeY8iSvXUT0pEX.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Furiosa_A_Mad_Max_Saga_2024/Furiosa_A_Mad_Max_Saga_2024_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Furiosa: A Mad Max Saga ฟูริโอซ่า: มหากาพย์ แมด แม็กซ์ (2024)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240627013026MV5BODE1NWQxZGMtOGExOC00ZTMxLTgxYzAtNjMzYzExMjgyNDdmXkEyXkFqcGdeQXVyMTA4NjE0NjEy._V1_.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Three_2016/Three_2016_st_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Three (2016) บรรยายไทย</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/202406221814356XJM3C47iGOK9nFU6yLFCSf4U5c.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/Trigger_Warning_2024/Trigger_Warning_2024_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Trigger Warning ลั่นไกเตือน (2024) NETFLIX</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240622174745A7EByudX0eOzlkQ2FIbogzyazm2.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie4/The_Beekeeper_2024/The_Beekeeper_2024_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">The Beekeeper นรกเรียกพ่อ (2024)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20230505115710y2d2SBqK33mGOG2CqAYMo3YbWE4.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie3/Assassin_Club_2023/Assassin_Club_2023_th_1080p.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Assassin Club (2023)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240620084920w0MXP33x1bq48TDC7IaNqQ8nxcc.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie3/24_Hours_to_Live_2017/24_Hours_to_Live_2017_th_1080.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">24 Hours to Live 24 ชั่วโมง จับเวลาฝ่าตาย (2017)</div>
+</div>
+
+
+<div class="movie-item" data-category="uncategorized">
+  <div class="movie-box">
+    <div class="movie-image">
+      <button type="button"
+        style="background-image:url(https://img.fw4free.com/postor/20240619095811wV0nNtlL0nxgse8llRi7SypkCQI.jpg);"
+        onclick="window.location.href='https://m1free.inwstream.com:1936/movie3/Big_City_Greens_the_Movie_Spacecation_2024/Big_City_Greens_the_Movie_Spacecation_2024_EN_1080p.mp4/playlist.m3u8'"
+        autofocus="">
+      </button>
+    </div>
+  </div>
+  <div class="movie-title">Big City Greens the Movie: Spacecation (2024) บรรยายไทย</div>
+</div>
+
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination-wrapper">
+            <nav>
+              <ul class="pagination">
+                <li><a href="go:main-fw" aria-label="กลับหน้าหลัก"><span aria-hidden="true"><< กลับหน้าหลัก</span></a></li>
+                <li class="active"><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action1.html"><b>1</b></a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action2.html">2</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action3.html">3</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action4.html">4</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action5.html">5</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action6.html">6</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action7.html">7</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action8.html">8</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action9.html">9</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action10.html">10</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action11.html">11</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action12.html">12</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action13.html">13</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action14.html">14</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action15.html">15</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action2.html">หน้าต่อไป»</a></li>
+                <li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action33.html">หน้าสุดท้าย»</a></li>
+              </ul>
+            </nav>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html><!DOCTYPE html>
 <html dir='ltr' lang='en'>
 <head>
 <title> fw4free-app24-action9 </title>
@@ -647,14 +1364,9 @@ $(document).ready(function(){
 										<li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action6.html">6</a></li>
 										<li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action7.html">7</a></li>
 										<li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action8.html">8</a></li>
-		 				 <li class="active"><a href='go:fw-ac9'><b>9</b></a></li>
+		 				 <li class="active"><a href='https://udzaa2238.github.io/fw4free-action/fw4free-app24-action9.html'><b>9</b></a></li>
 										<li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action10.html">
-										<li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action11.html">11</a></li>
-										<li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action12.html">12</a></li>
-										<li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action13.html">13</a></li>
-										<li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action14.html">14</a></li>
-										<li><a href="https://udzaa2238.github.io/fw4free-action/fw4free-app24-action15.html">15</a></li>
-										<li><a href='https://udzaa2238.github.io/fw4free-action/fw4free-app24-action10.html'>หน้าต่อไป»</a></li>
+										<li><a href='https://udzaa2238.github.io/fw4free-action/fw4free-app24-action11.html'>หน้าต่อไป»</a></li>
 						<li><a href='https://udzaa2238.github.io/fw4free-action/fw4free-app24-action15.html'>  หน้าสุดท้าย» </a></li>
 			</ul>
 		</nav>
